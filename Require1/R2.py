@@ -62,11 +62,9 @@ def display_rows(data):
         else:
             print("Invalid input. Please re-enter.")
 
-#This line will help us exit out of our options and code
-
 #calling the CSV url file
-#url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
-url = 'sales_data_test.csv'
+url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
+#url = 'sales_data_test.csv'
 sales_data = load_csv(url)
 
 # Main loop for the user
