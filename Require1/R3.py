@@ -78,6 +78,7 @@ def display_menu(data):
         menu_options = (
              ("Show the first n rows of sales data", display_rows),
              ("Total sales by region and order type", sales_by_region),
+             ("Average sales by region with average sales by state and sale type", sales_state_region),
              ("Exit", exit_program),
         )
         
@@ -102,6 +103,11 @@ def sales_by_region(data):
     
     print(f"The total sales by region and order type: ")
     print(pivot_table)
+
+#The following line will represent how to create a pivot for sales by region
+def sales_state_region(data):
+    pivot_table = pd.pivot_table(data, index='sales_region', columns="customer_state",
+                                 aggfunc='max')
 
 #calling the CSV url file
 url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
