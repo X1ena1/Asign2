@@ -70,8 +70,8 @@ def display_rows(data):
 
 #Cleanly Exit the Program
 def exit_program(data):
-    print("Exiting Program, Thank you.").strip().lower()
     sys.exit(0)
+    print("Exiting Program, Thank you.").strip().lower()
 
 #Testing the different analysis from the list
 def display_menu(data):
@@ -79,21 +79,27 @@ def display_menu(data):
              ("Show the first n rows of sales data", display_rows),
              ("Total sales by region and order type", sales_by_region),
              ("Average sales by region with average sales by state and sale type", sales_state_region),
+             ("Sales by customer type and order type by state", customer_state),
+             ("Total sales quantity and price by region and product", region_product),
              ("Exit", exit_program),
         )
         
-        print("\nPlease choose from among these options:")
+        print("\nSales Data Dashboard:")
         for index, (description, _) in enumerate(menu_options):
              print(f"{index+1}: {description}")
 
         num_choices = len(menu_options)
-        choice = int(input(f"Select an option between 1 and {num_choices}: "))
 
-        if 1 <= choice <= num_choices:
-            action = menu_options[choice-1][1]
-            action(data)
-        else:
-            print("Invalid input. Please re-enter.")
+        while True:
+            try:
+                choice = int(input(f"Select an option between 1 and {num_choices}: "))
+                if 1 <= choice <= num_choices:
+                    action = menu_options[choice-1][1]
+                    action(data)
+                else:
+                    print("Invalid input. Please re-enter.")
+            except ValueError:
+                print(f"Invalid Input. Please enter a number")
 
 
 #This following line will represent the totla sales by region and orde type
@@ -106,8 +112,28 @@ def sales_by_region(data):
 
 #The following line will represent how to create a pivot for sales by region
 def sales_state_region(data):
-    pivot_table = pd.pivot_table(data, index='sales_region', columns="customer_state",
-                                 aggfunc='max')
+    pivot_table = pd.pivot_table(data, index='sales_region', columns=['customer_state', 'order_type'],
+                                 values='quantity', aggfunc='mean', fill_value=0)
+    
+    print(f"The average sales by region with average sales by state and sale type:")
+    print(pivot_table)
+
+#The following code will make a pivot from customers by their order type by state
+def customer_state(data):
+    pivot_table = pd.pivot_table(data, index=['customer_type', 'customer_state'], columns='order_type',
+                                 values='quantity', aggfunc='sum', fill_value=0)
+    
+    print("\nSales by customer type and order type by state:")
+    print(pivot_table)
+
+#The following is going to create a pivot that sums the quantity and sales per row,
+#  by order & customer
+def region_product(data):
+    pivot_table = pd.pivot_table(data, index=['sale_region', 'product_category'], columns='order_type', 
+                                 values=['quantity', 'sale_price'], aggfunc='sum', fill_value=0)
+    
+    print("\nTotal sales quantity and price by region and product:")
+    print(pivot_table)
 
 #calling the CSV url file
 url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
