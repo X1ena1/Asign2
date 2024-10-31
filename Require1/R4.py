@@ -68,6 +68,103 @@ def display_rows(data):
         else:
             print("Invalid input. Please re-enter.")
 
+#Creating an interactive sub menu enabling the user to chose: 
+# I had Chatgbt help me reorganize
+def select_options(options, prompt):
+    while True:
+        print(prompt)
+        for i, option in enumerate(options, start=1):
+            print(f"{i}. {option}")
+        
+        selections = input("Enter the number(s) of your choice(s), separated by commas: ").split(',') #acknowledges the comma and splits
+        valid_selections = []
+
+        #Checking for invalid inputs
+        for i in selections:
+            try:
+                index = int(i.strip()) - 1
+                if 0 <= index < len(options):
+                    valid_selections.append(options[index])
+            except ValueError:
+                pass  # Ignore invalid inputs
+
+        if valid_selections:
+            return valid_selections
+        print("Invalid input. Please try again.")
+
+#The following tuples are the options to chose to generate a custom pivot
+def pivot_submenu(data):
+    while True:
+    #Defining row options    
+        row_options = [
+            'employee_name',
+            'sales_region',
+            'product_category'
+        ]
+
+    #Defining column options
+        column_options = [
+            'order_type',
+            'customer_type'
+        ]
+
+    #Defining value options
+        value_options = [
+            'quantity',
+            'sale_price'
+        ]
+
+    #Defining agg functions
+        agg_options = [
+            'sum',
+            'mean',
+            'count'
+        ]
+
+        # Select rows
+        selected_rows = select_options(row_options, "\nSelect rows:\n")
+        
+        # Select columns (optional)
+        selected_columns = select_options(column_options, "\nSelect columns (optional, press Enter for none):\n") or None
+        
+        # Select values
+        selected_values = select_options(value_options, "\nSelect numeric:\n")
+        
+        # Select aggregation function
+        selected_aggfunction = select_options(agg_options, "\nSelect aggregation function:\n")[0]  # Take the first selected
+
+    #creating the pivot table
+        pivot_table = pd.pivot_table(data, index=selected_rows, values=selected_values,
+                                 columns=selected_columns if selected_columns else None,
+                                 aggfunc=selected_aggfunction, fill_value=0)
+    
+        print("\nGenerated Pivot table:")
+        print(pivot_table)
+
+
+    #(Individual requirement) asking the user if they'd like to export in Excel
+        export = input("Would you like to export your pivot table? (yes/no): ").strip().lower()
+        if export in ('yes'):
+         #The following will be asked to create a file name
+            file_name = input("Please enter a file name (without .xlsx): ").strip() + '.xlsx' #The + will add .xlsx for Excel to read
+            #Take the pivot_table and export
+            pivot_table.to_excel(file_name, index=True)
+            print(f"File exported to {file_name}.")
+        elif export in ('no'):
+            print("Not exporting")
+        else:
+            print("Please anser (yes/no).")
+
+    #Asking if they would want to create another pivot table in the loop
+        again = input("Would you want to generate another pivot table? (yes/no): ").strip().lower()
+        if again in ('yes'):
+            continue
+        elif again in ('no'):
+            print("Exiting, have a good one!")   #Exitting the pivot table
+            break
+        else:
+            print("Please answer (yes/no).") #If they didn't answer correctly ask again
+
 #Cleanly Exit the Program
 def exit_program(data):
     print("Exiting Program, Thank you.")
@@ -84,6 +181,7 @@ def display_menu(data):
              ("Total sales quantity and price customer type", sales_quantity_type),
              ("Max and min sales price of sales by category", max_min_sales),
              ("Number of unique employees by region", unique_employees),
+             ("Generate Custom Pivot table", pivot_submenu),
              ("Exit", exit_program),
         )
         
@@ -103,7 +201,6 @@ def display_menu(data):
                     print("Invalid input. Please re-enter.")
             except ValueError:
                 print(f"Invalid Input. Please enter a number")
-
 
 #This following line will represent the totla sales by region and order type
 def sales_by_region(data):
