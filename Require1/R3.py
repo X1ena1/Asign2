@@ -22,7 +22,7 @@ def load_csv(file_path):
         #print(f"Available columns: {sales_data.columns.to_list()}")
         
         #list of required columns
-        required_columns = ['quantity', 'order_date', 'unit_price']
+        required_columns = ['quantity', 'order_date', 'unit_price', 'sale_price']
         
         #Check for missing columns
         missing_columns = [col for col in required_columns if col not in sales_data.columns]
@@ -70,8 +70,8 @@ def display_rows(data):
 
 #Cleanly Exit the Program
 def exit_program(data):
+    print("Exiting Program, Thank you.")
     sys.exit(0)
-    print("Exiting Program, Thank you.").strip().lower()
 
 #Testing the different analysis from the list
 def display_menu(data):
@@ -80,7 +80,7 @@ def display_menu(data):
              ("Total sales by region and order type", sales_by_region),
              ("Average sales by region with average sales by state and sale type", sales_state_region),
              ("Sales by customer type and order type by state", customer_state),
-             ("Total sales quantity and price by region and product", region_product),
+             ("Total sales quantity and price by region and product", sales_region_product),
              ("Exit", exit_program),
         )
         
@@ -128,11 +128,11 @@ def customer_state(data):
 
 #The following is going to create a pivot that sums the quantity and sales per row,
 #  by order & customer
-def region_product(data):
-    pivot_table = pd.pivot_table(data, index=['sale_region', 'product_category'], columns='order_type', 
-                                 values=['quantity', 'sale_price'], aggfunc='sum', fill_value=0)
+def sales_region_product(data):
+    pivot_table = pd.pivot_table(data, index=["sales_region", "product_category"], columns='order_type',
+                                 values='quantity', aggfunc='sum', fill_value=0)
     
-    print("\nTotal sales quantity and price by region and product:")
+    print("\nSales by region and product:")
     print(pivot_table)
 
 #calling the CSV url file
