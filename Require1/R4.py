@@ -9,16 +9,15 @@ ssl._create_default_https_context = ssl._create_unverified_context
 #Set to display the max columns
 pd.set_option("display.max_columns", None)
 
-#loading the CSV file
+#loading the CSV file & attempting to read the CSV file
 def load_csv(file_path):
-    #attempting to read CSV file
     try:
         print(f"Reading CSV file: {file_path}")
         start_time = time.time()
         sales_data = pd.read_csv(file_path, dtype_backend='pyarrow', on_bad_lines="skip")
-        load_time = time.time() - start_time  #Calculating time it takes to load
+        load_time = time.time() - start_time            #Calculating time it takes to load
         print(f"file loaded in {load_time:.2f} seconds")
-        print(f"Number of rows: {len(sales_data)}")  #calculating the length of rows and returning the info
+        print(f"Number of rows: {len(sales_data)}")     #calculating the length of rows and returning the info
         #print(f"Available columns: {sales_data.columns.to_list()}")
         
         #list of required columns
@@ -37,6 +36,7 @@ def load_csv(file_path):
 
         return sales_data
     
+    #The following codes are handling any errors that could happen
     except FileNotFoundError:
         print(f"Error: the file {file_path} was not found.")
     except pd.errors.EmptyDataError as e:
@@ -45,6 +45,26 @@ def load_csv(file_path):
         print(f"Error: there was a problem parsing {file_path}.")
     except Exception as e:
         print(f"An error has occured: {e}")
+
+    #(Individual requirement 2) Displaying a summary data:  AI help me to properply
+    #count unique items and ignore if not there
+def display_summary_data(data):
+    summary = {
+        "Total Orders": len(data),
+        "Number of Employees": data['employee_name'].nunique() if 'employee_name' in data else [0],
+        "Sales Regions": data['sales_region'].nunique() if 'sales_region' in data else [0],
+        "Date Range of Orders": (data['order_date'].min(), data['order_date'].max()) if 'order_date' in data else (None, None),
+        "Unique Customers": data['customer_id'].nunique() if 'customer_id' in data else [0],
+        "Product Categories": data['product_category'].nunique() if 'product_category' in data else [0],
+        "Unique States": data['state'].nunique() if 'state' in data else [0],
+        "Total Sales Amount": data['sale_price'].sum() if 'sale_price' in data else [0],
+        "Total Quantities Sold": data['quantity'].sum() if 'quantity' in data else [0],
+    }
+
+    print("\nData Summary:")
+    for key, value in summary.items():
+        print(f"{key}: {value}")
+
 
 # Function to display a user-choosable number of rows
 def display_rows(data):
@@ -69,7 +89,6 @@ def display_rows(data):
             print("Invalid input. Please re-enter.")
 
 #Creating an interactive sub menu enabling the user to chose: 
-# I had Chatgbt help me reorganize
 def select_options(options, prompt):
     while True:
         print(prompt)
@@ -79,7 +98,7 @@ def select_options(options, prompt):
         selections = input("Enter the number(s) of your choice(s), separated by commas: ").split(',') #acknowledges the comma and splits
         valid_selections = []
 
-        #Checking for invalid inputs
+        #Checking for invalid inputs: AI helped select items to validate them from options
         for i in selections:
             try:
                 index = int(i.strip()) - 1
@@ -95,26 +114,23 @@ def select_options(options, prompt):
 #The following tuples are the options to chose to generate a custom pivot
 def pivot_submenu(data):
     while True:
-    #Defining row options    
+    #The following lines are definning options    
         row_options = [
             'employee_name',
             'sales_region',
             'product_category'
         ]
 
-    #Defining column options
         column_options = [
             'order_type',
             'customer_type'
         ]
 
-    #Defining value options
         value_options = [
             'quantity',
             'sale_price'
         ]
 
-    #Defining agg functions
         agg_options = [
             'sum',
             'mean',
@@ -191,6 +207,7 @@ def display_menu(data):
 
         num_choices = len(menu_options)
 
+#The following code checks to see if the options are valid
         while True:
             try:
                 choice = int(input(f"Select an option between 1 and {num_choices}: "))
@@ -266,7 +283,7 @@ sales_data = load_csv(url)
     
 # Main loop for the user
 def main():
-    if sales_data is not None: #Chatgbt helped me to properly refernce the main menu
+    if sales_data is not None: #AI helped me to properly referance the main menu
         while True:
             display_menu(sales_data)
 
