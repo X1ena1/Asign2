@@ -81,6 +81,9 @@ def display_menu(data):
              ("Average sales by region with average sales by state and sale type", sales_state_region),
              ("Sales by customer type and order type by state", customer_state),
              ("Total sales quantity and price by region and product", sales_region_product),
+             ("Total sales quantity and price customer type", sales_quantity_type),
+             ("Max and min sales price of sales by category", max_min_sales),
+             ("Number of unique employees by region", unique_employees),
              ("Exit", exit_program),
         )
         
@@ -107,7 +110,7 @@ def sales_by_region(data):
     pivot_table = pd.pivot_table(data, index='sales_region', columns="order_type",
                                  values='quantity', aggfunc='sum', fill_value=0)
     
-    print(f"The total sales by region and order type: ")
+    print("\nThe total sales by region and order type: ")
     print(pivot_table)
 
 #The following line will represent how to create a pivot for sales by region
@@ -115,7 +118,7 @@ def sales_state_region(data):
     pivot_table = pd.pivot_table(data, index='sales_region', columns=['customer_state', 'order_type'],
                                  values='quantity', aggfunc='mean', fill_value=0)
     
-    print(f"The average sales by region with average sales by state and sale type:")
+    print("\nThe average sales by region with average sales by state and sale type:")
     print(pivot_table)
 
 #The following code will make a pivot from customers by their order type by state
@@ -129,15 +132,36 @@ def customer_state(data):
 #The following is going to create a pivot that sums the quantity and sales per row,
 #  by order & customer
 def sales_region_product(data):
-    pivot_table = pd.pivot_table(data, index=["sales_region", "product_category"], columns='order_type',
-                                 values='quantity', aggfunc='sum', fill_value=0)
+    pivot_table = pd.pivot_table(data, index=["sales_region", "product_category"], values=['order_type', 'sale_price'],
+                                 aggfunc='sum', fill_value=0)
     
     print("\nSales by region and product:")
     print(pivot_table)
 
+def sales_quantity_type(data):
+    pivot_table = pd.pivot_table(data, index=['order_type', 'customer_type'], values=['quantity', 'sale_price'],
+                                 aggfunc='sum', fill_value=0)
+    
+    print("\nTotal sales quantity and price by customer type:")
+    print(pivot_table)
+
+def max_min_sales(data):
+    pivot_table = pd.pivot_table(data, index='product_category', values='sale_price',
+                                 aggfunc=['max', 'min'], fill_value=0)
+    
+    print("\nMax and min sales price of sales by category")
+    print(pivot_table)
+
+def unique_employees(data):
+    pivot_table = pd.pivot_table(data, index='sales_region', values='employee_id',
+                                 aggfunc=pd.Series.unique, fill_value=0)
+    
+    print("\nNumber of unique employees by region")
+    print(pivot_table)
+
 #calling the CSV url file
-url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
-#url = 'sales_data_test.csv'
+#url = "https://drive.google.com/uc?export=download&id=1Fv_vhoN4sTrUaozFPfzr0NCyHJLIeXEA"
+url = 'sales_data.csv'
 sales_data = load_csv(url)
     
 # Main loop for the user
