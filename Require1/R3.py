@@ -132,7 +132,7 @@ def customer_state(data):
 #The following is going to create a pivot that sums the quantity and sales per row,
 #  by order & customer
 def sales_region_product(data):
-    pivot_table = pd.pivot_table(data, index=["sales_region", "product_category"], values=['order_type', 'sale_price'],
+    pivot_table = pd.pivot_table(data, index='sales_region', columns='product_category', values=['order_type', 'sale_price'],
                                  aggfunc='sum', fill_value=0)
     
     print("\nSales by region and product:")
